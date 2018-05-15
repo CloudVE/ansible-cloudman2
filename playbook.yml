@@ -1,0 +1,26 @@
+---
+- name: Bootstrap CloudMan
+  hosts: all
+  become: yes
+  tasks:
+    - name: Check if Docker is installed
+      command: docker
+      register: docker_installed
+      ignore_errors: True
+
+    - name: Install Docker
+      include_role:
+        name: docker
+      vars:
+        docker_users:
+          - ubuntu
+      when: "docker_installed is failed"
+
+    # Note that this task does not wait for container to exit/end execution
+    - name: Boot CloudMan
+      docker_container:
+        name: cloudman-boot
+        image: afgane/cloudman-boot
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+...

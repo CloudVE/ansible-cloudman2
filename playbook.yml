@@ -23,4 +23,6 @@
         image: afgane/cloudman-boot
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
+        env:
+          CM_RANCHER_PWD: "{{ rancher_pwd|default('Something-To-Change') }}"
 ...

@@ -24,5 +24,6 @@
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
         env:
-          CM_RANCHER_PWD: "{{ rancher_pwd|default('Something-To-Change') }}"
+          RANCHER_PWD: "{{ rancher_pwd|default('Something-To-Change') }}"
+          CM_BOOTSTRAP_DATA: "{{ cm_bootstrap_data|default('', true) }}"
 ...

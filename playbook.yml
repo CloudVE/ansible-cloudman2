@@ -2,6 +2,13 @@
 - name: Bootstrap CloudMan
   hosts: all
   become: yes
+  gather_facts: False
+  pre_tasks:
+    - name: Install Python2 if not available
+      vars:
+        - ansible_python_interpreter: /usr/bin/python3
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+    - setup: # aka gather_facts
   tasks:
     - name: Check if Docker is installed
       command: docker
@@ -15,6 +22,20 @@
         docker_users:
           - ubuntu
       when: "docker_installed is failed"
+
+    - name: Install system packages
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - python-pip
+
+    - name: Install pip modules
+      pip:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - docker-py
 
     # Note that this task does not wait for container to exit/end execution
     - name: Boot CloudMan

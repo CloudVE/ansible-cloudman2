@@ -29,6 +29,8 @@
         state: present
       with_items:
         - python-pip
+      register: pkg_result
+      until: pkg_result | success
       retries: 6
       delay: 10
 

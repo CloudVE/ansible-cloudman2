@@ -29,6 +29,8 @@
         state: present
       with_items:
         - python-pip
+      retries: 6
+      delay: 10
 
     - name: Install pip modules
       pip:

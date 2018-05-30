@@ -49,6 +49,7 @@
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
         env:
+          RANCHER_SERVER: "{{ rancher_server }}"
           RANCHER_PWD: "{{ rancher_pwd|default('Something-To-Change') }}"
           CM_BOOTSTRAP_DATA: "{{ cm_bootstrap_data|default('', true) }}"
 ...

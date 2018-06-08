@@ -8,6 +8,8 @@
       vars:
         - ansible_python_interpreter: /usr/bin/python3
       raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+      retries: 30
+      delay: 10
     - setup: # aka gather_facts
   tasks:
     - name: Check if Docker is installed

@@ -47,7 +47,7 @@
     - name: Boot CloudMan
       docker_container:
         name: cloudman-boot
-        image: "{{ cm_boot_image|default('afgane/cloudman-boot') }}"
+        image: "{{ cm_boot_image|default('galaxy/cloudman-boot') }}"
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
         env:

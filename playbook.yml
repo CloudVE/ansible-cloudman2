@@ -32,7 +32,7 @@
       with_items:
         - python-pip
       register: pkg_result
-      until: pkg_result | success
+      until: pkg_result is success
       retries: 30
       delay: 10
 
@@ -53,5 +53,5 @@
         env:
           RANCHER_SERVER: "{{ rancher_server }}"
           RANCHER_PWD: "{{ rancher_pwd|default('Something-To-Change') }}"
-          CM_BOOTSTRAP_DATA: "{{ cm_bootstrap_data|default('', true) | to_json }}"
+          CM_BOOTSTRAP_DATA: "{{ cm_bootstrap_data|default('', true) }}"
 ...

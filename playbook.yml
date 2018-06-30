@@ -43,7 +43,7 @@
       with_items:
         - docker-py
 
-    # Note that this task does not wait for container to exit/end execution
+    # Note that this task does not wait for the container to exit/end execution
     - name: Boot CloudMan
       docker_container:
         name: cloudman-boot
@@ -54,4 +54,5 @@
           RANCHER_SERVER: "{{ rancher_server }}"
           RANCHER_PWD: "{{ rancher_pwd|default('Something-To-Change') }}"
           CM_BOOTSTRAP_DATA: "{{ cm_bootstrap_data|default('', true) }}"
+          CM_PULSAR_ONLY: "{{ cm_bootstrap_only|default(false) }}"
 ...

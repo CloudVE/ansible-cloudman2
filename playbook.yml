@@ -54,5 +54,5 @@
           RANCHER_SERVER: "{{ rancher_server }}"
           RANCHER_PWD: "{{ rancher_pwd|default('Something-To-Change') }}"
           CM_BOOTSTRAP_DATA: "{{ cm_bootstrap_data|default('', true) }}"
-          CM_PULSAR_ONLY: "{{ cm_bootstrap_only|default(false) }}"
+          CM_PULSAR_TOKEN: "{{ cm_pulsar_token|default('', true) }}"
 ...

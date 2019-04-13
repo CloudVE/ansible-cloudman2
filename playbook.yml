@@ -53,5 +53,6 @@
         env:
           RANCHER_SERVER: "{{ rancher_server }}"
           RANCHER_PWD: "{{ rancher_pwd|default('Something-To-Change') }}"
-          CM_BOOTSTRAP_DATA: "{{ cm_bootstrap_data|default('', true) }}"
+          CM_INITIAL_CLOUD_DATA: "{{ cm_initial_cloud_data|default('', true) }}"
+          CM_INITIAL_CLUSTER_DATA: "{{ cm_initial_cluster_data|default('', true) }}"
 ...

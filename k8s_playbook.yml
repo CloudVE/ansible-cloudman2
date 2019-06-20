@@ -1,0 +1,139 @@
+---
+# This playbook is used to setup kubectl and helm client commands on the host. 
+# This assumes a Rancher instance, setup via cloudman-boot.
+#
+# Usage:
+#   ansible-playbook -i inventory k8s_playbook.yml
+#
+# Assumed inventory format:
+#   3.216.172.124 rancher_server=3.216.172.124 cluster_id=c-4ssq7 rancher_token=token-cpgkm:n4268xbn97gflzbedbl7zt7jpq4kc4l7xxbz6m6sglckwb66pg6w6w
+# 
+#   [all:vars]
+#   ansible_ssh_port=22
+#   ansible_user='ubuntu'
+#   ansible_ssh_private_key_file=pk
+#   ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
+
+- name: Setup kubectl and helm
+  hosts: all
+  gather_facts: False
+
+  tasks:
+    # This task is requried for the Ansible k8s module
+    - name: Ensure OpenShift client is installed
+      become: yes
+      pip:
+        name: openshift
+        state: present
+
+    - name:  Copy fix_hostname script
+      copy: src=files/fix_hostname.sh dest=/tmp/fix_hostname.sh mode=0755
+
+    - name: Run the fix_hostname script
+      become: yes
+      command: /tmp/fix_hostname.sh
+
+    # Install kubectl
+    - name: Add an apt signing key for Kubernetes
+      become: yes
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: Adding apt repository for Kubernetes
+      become: yes
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: kubernetes.list
+
+    - name: Install Kubernetes binaries
+      become: yes
+      apt:
+        name: kubectl
+        state: present
+        update_cache: yes
+
+    # Configure kubectl
+    - name: Make sure .kube dir exist
+      file:
+        path: ~/.kube
+        state: directory
+
+    - name: Fetch kubectl config from Rancher
+      uri:
+        url: https://{{ rancher_server }}:4430/v3/clusters/{{ cluster_id }}?action=generateKubeconfig
+        method: POST
+        headers:
+          Content-Type: application/json
+          Authorization: Bearer {{ rancher_token }}
+        validate_certs: False
+      register: kubectl_config
+
+    - name: Place kubectl config
+      copy:
+        content: "{{ kubectl_config.json.config }}"
+        dest: ~/.kube/config
+
+    - name: Add KUBECONFIG to shell
+      lineinfile:
+        dest: ~/.bashrc
+        state: present
+        line: "export KUBECONFIG=~/.kube/config"
+
+    # Setup Helm
+    # - name: Create Tiller ServiceAccount
+    #   k8s:
+    #     state: present
+    #     definition:
+    #       apiVersion: v1
+    #       kind: ServiceAccount
+    #       metadata:
+    #         name: tiller
+    #         namespace: kube-system
+
+    # - name: Apply Tiller RBAC definition
+    #   k8s:
+    #     state: present
+    #     definition: "{{ lookup('file', 'files/tiller-rbac.yml') | from_yaml }}"
+
+    - name: Retrieve helm binary archive
+      unarchive:
+        src: https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz
+        dest: /tmp
+        creates: /usr/local/bin/helm
+        remote_src: yes
+
+    - name: Move helm binary into place
+      become: yes
+      command: >
+        cp /tmp/linux-amd64/helm /usr/local/bin/helm
+        creates=/usr/local/bin/helm
+
+    - name: Initialize Helm
+      command: helm init --client-only
+
+    # - name: Initialize Helm and Tiller
+    #   command: helm init --service-account tiller
+    #   register: helm_init_result
+    #   changed_when: "'already installed' not in helm_init_result.stdout"
+
+    # - name: Get Tiller's ClusterIP
+    #   k8s:
+    #     api_version: v1
+    #     kind: Service
+    #     name: tiller-deploy
+    #     namespace: kube-system
+    #   register: tiller_service
+
+    # - name: Set the Helm host and port
+    #   set_fact:
+    #     helm_host: "{{ tiller_service.result.spec.clusterIP }}"
+    #     helm_port: "{{ tiller_service.result.spec.ports[0].port }}"
+
+    # - name: Wait for Tiller to become responsive
+    #   wait_for:
+    #     host: '{{ helm_host }}'
+    #     port: '{{ helm_port }}'
+    #     state: started
+...

@@ -17,6 +17,9 @@
     state: started
     enabled: yes
 
+- name: Fix task max - https://success.docker.com/article/how-to-reserve-resource-temporarily-unavailable-errors-due-to-tasksmax-setting
+  command: systemctl set-property docker.service TasksMax=infinity
+
 - name: Ensure handlers are notified now to avoid firewall conflicts.
   meta: flush_handlers
   when: docker_restart_on_package_change

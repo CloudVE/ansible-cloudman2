@@ -136,4 +136,38 @@
     #     host: '{{ helm_host }}'
     #     port: '{{ helm_port }}'
     #     state: started
+
+    - name: Generate a random password
+      shell: cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 11 | head -n 1
+      register: pwd
+
+    - name: Generate a salt value
+      shell: cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 11 | head -n 1
+      register: salt
+
+    - name: Set ubuntu user password
+      become: true
+      user:
+        name: ubuntu
+        password: "{{ pwd.stdout | password_hash('sha512', salt.stdout) }}"
+
+    - name: Update sshd config to allow password logins
+      become: yes
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^PasswordAuthentication.*no"
+        line: "PasswordAuthentication=yes"
+
+    - name: Restart sshd service
+      become: yes
+      service:
+        name: sshd
+        state: restarted
+
+    - name: Store the IP and password locally
+      lineinfile:
+        path: "keys.csv"  # This file must exists on the local machine
+        regexp: "^{{ rancher_server }},*"
+        line: "{{ rancher_server }},{{ pwd.stdout }}"
+      delegate_to: 127.0.0.1
 ...

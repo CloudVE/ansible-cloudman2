@@ -137,6 +137,10 @@
     #     port: '{{ helm_port }}'
     #     state: started
 
+    - name: Fetch Dashboard token
+      shell: kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep kubernetes-dashboard-token | awk '{print $1}') | grep "token:" | awk '{print $2}'
+      register: dash_token
+
     - name: Generate a random password
       shell: cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 11 | head -n 1
       register: pwd
@@ -166,8 +170,9 @@
 
     - name: Store the IP and password locally
       lineinfile:
-        path: "keys.csv"  # This file must exists on the local machine
+        path: "keys/{{ rancher_server }}.csv"  # Split for concurrency reasons
         regexp: "^{{ rancher_server }},*"
-        line: "{{ rancher_server }},{{ pwd.stdout }}"
+        line: "{{ rancher_server }},{{ pwd.stdout }},{{ dash_token.stdout }}"
+        create: yes
       delegate_to: 127.0.0.1
 ...

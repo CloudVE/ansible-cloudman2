@@ -23,6 +23,7 @@
       vars:
         docker_users:
           - ubuntu
+        docker_install_compose: false
       when: "docker_installed is failed"
 
     - name: Install system packages

@@ -52,6 +52,7 @@
         env:
           RANCHER_SERVER: "{{ rancher_server }}"
           RANCHER_PWD: "{{ rancher_pwd|default('Something-To-Change') }}"
+          CM_DEPLOYMENT_NAME: "{{ cm_deployment_name|default('', true) }}"
           CM_INITIAL_CLUSTER_DATA: "{{ cm_initial_cluster_data|default('', true) }}"
           CM_HELM_VALUES: "{{ cm_helm_values|default('', true) }}"
           CM_SKIP_CLOUDMAN: "{{ cm_skip_cloudman|default('false', true) }}"

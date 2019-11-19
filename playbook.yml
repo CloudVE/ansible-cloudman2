@@ -12,6 +12,10 @@
       delay: 10
     - setup: # aka gather_facts
   tasks:
+    - name: Update apt cache.
+      apt: update_cache=yes
+      when: ansible_os_family == 'Debian'
+
     - name: Check if Docker is installed
       command: docker
       register: docker_installed
@@ -34,7 +38,7 @@
         - python-pip
       register: pkg_result
       until: pkg_result is success
-      retries: 30
+      retries: 50
       delay: 10
 
     - name: Install pip modules

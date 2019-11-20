@@ -45,7 +45,7 @@
 
     - name: Install pip modules
       pip:
-        name: ['docker-py']
+        name: ['backports.ssl-match-hostname', 'docker']
         state: present
 
     # Note that this task does not wait for the container to exit/end execution

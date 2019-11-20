@@ -37,6 +37,7 @@
         name: "{{ item }}"
         state: present
       with_items:
+        - python-backports.ssl-match-hostname
         - python-pip
       register: pkg_result
       until: pkg_result is success
@@ -45,7 +46,7 @@
 
     - name: Install pip modules
       pip:
-        name: ['backports.ssl-match-hostname', 'docker']
+        name: ['docker']
         state: present
 
     # Note that this task does not wait for the container to exit/end execution

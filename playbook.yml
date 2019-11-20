@@ -17,6 +17,8 @@
       when: ansible_os_family == 'Debian'
       retries: 30
       delay: 10
+      register: result
+      until: result['cache_updated']|default('false')
 
     - name: Check if Docker is installed
       command: docker

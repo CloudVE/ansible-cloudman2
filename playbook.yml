@@ -2,7 +2,7 @@
 - name: Bootstrap CloudMan
   hosts: all
   become: yes
-  gather_facts: False
+  gather_facts: false
   pre_tasks:
     - name: Install Python2 if not available
       vars:
@@ -19,11 +19,12 @@
       delay: 10
       register: result
       until: result['cache_updated']|default('false')
+      ignore_errors: true
 
     - name: Check if Docker is installed
       command: docker
       register: docker_installed
-      ignore_errors: True
+      ignore_errors: true
 
     - name: Install Docker
       include_role:

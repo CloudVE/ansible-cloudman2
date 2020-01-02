@@ -1,5 +1,5 @@
 ---
-- name: Bootstrap CloudMan
+- name: Bootstrap Docker Container
   hosts: all
   become: yes
   gather_facts: false
@@ -53,19 +53,10 @@
         state: present
 
     # Note that this task does not wait for the container to exit/end execution
-    - name: Boot CloudMan
+    - name: "Boot Container {{ docker_container_name }}"
       docker_container:
-        name: cloudman-boot
-        image: "{{ cm_boot_image|default('galaxy/cloudman-boot') }}"
-        volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
-        env:
-          RANCHER_SERVER: "{{ rancher_server }}"
-          RANCHER_PWD: "{{ rancher_pwd|default('Something-To-Change') }}"
-          CM_DEPLOYMENT_NAME: "{{ cm_deployment_name|default('', true) }}"
-          CM_INITIAL_CLUSTER_DATA: "{{ cm_initial_cluster_data|default('', true) }}"
-          CM_HELM_VALUES: "{{ cm_helm_values|default('', true) }}"
-          CM_SKIP_CLOUDMAN: "{{ cm_skip_cloudman|default('false', true) }}"
-          KUBE_CLOUD_PROVIDER: "{{ kube_cloud_provider|default('', true) }}"
-          KUBE_CLOUD_CONF: "{{ kube_cloud_conf|default('', true) }}"
-...
+        name: "{{ docker_container_name }}"
+        image: "{{ docker_boot_image }}"
+        volumes: "{{ docker_volumes|default([], true) }}"
+        published_ports: "{{ docker_ports|default([], true) }}"
+        env: "{{ docker_env|default({}, true) }}"

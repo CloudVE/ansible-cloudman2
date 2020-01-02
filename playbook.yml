@@ -1,5 +1,5 @@
 ---
-- name: Bootstrap CloudMan
+- name: Bootstrap Docker Container
   hosts: all
   become: yes
   gather_facts: false
@@ -53,7 +53,7 @@
         state: present
 
     # Note that this task does not wait for the container to exit/end execution
-    - name: Boot CloudMan
+    - name: "Boot Container {{ docker_container_name }}"
       docker_container:
         name: "{{ docker_container_name }}"
         image: "{{ docker_boot_image }}"

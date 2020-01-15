@@ -60,3 +60,9 @@
         volumes: "{{ docker_volumes|default([], true) }}"
         published_ports: "{{ docker_ports|default([], true) }}"
         env: "{{ docker_env|default({}, true) }}"
+      when: docker_container_name is defined
+
+    # Allow execution of shell command
+    - name: "Running shell command {{ ansible_shell_command }}"
+      shell: "{{ ansible_shell_command }}"
+      when: ansible_shell_command is defined

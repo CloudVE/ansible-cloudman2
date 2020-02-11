@@ -12,6 +12,10 @@
       delay: 10
     - setup: # aka gather_facts
   tasks:
+    - name: Wait for any possibly running unattended upgrade to finish
+      raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
+      when: ansible_os_family == 'Debian'
+
     - name: Update apt cache.
       apt: update_cache=yes
       when: ansible_os_family == 'Debian'

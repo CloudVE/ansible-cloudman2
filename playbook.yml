@@ -26,7 +26,7 @@
     # See https://github.com/ansible/ansible/issues/16593#issuecomment-253026793
     - name: Wait for auto-update Ubuntu does on first boot to complete.
       become: yes
-      shell: while sudo fuser /var/lib/apt/lists/{{ item}} >/dev/null 2>&1 ; do sleep 1 ; done
+      shell: while sudo fuser /var/lib/apt/lists/{{ item }} >/dev/null 2>&1 ; do sleep 1 ; done
       loop:
         - lock
         - lock-frontend

@@ -22,8 +22,6 @@
       loop:
         - lock
         - lock-frontend
-      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-
 
     # This is needed because gather_facts a.k.a setup errors out if python is unavailable
     - name: Install Python2 if not available
